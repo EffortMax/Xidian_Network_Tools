@@ -295,7 +295,7 @@ def run_elevated_route_commands(commands: list[list[str]], op_title: str = "更�
         lines.append("ipconfig /flushdns >nul 2>&1")
         lines.append(f"echo [OK] {op_title} 执行完成！")
         lines.append("exit /b 0")
-        with open(bat_path, "w", encoding="utf-8") as f:
+        with open(bat_path, "w", encoding="utf-8", newline="") as f:
             f.write("\r\n".join(lines) + "\r\n")
     except Exception:
         pass
