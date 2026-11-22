@@ -1,10 +1,8 @@
 @echo off
-chcp 65001 >nul
-title 一键还原并清除战网无线分流网段路由 v1.4
+chcp 65001 >nul 2>&1
 
 net session >nul 2>&1
 if %errorLevel% neq 0 (
-    echo [*] 正在请求管理员权限以一键还原并清除全部战网 CIDR 网段路由...
     powershell -NoProfile -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
     exit /b
 )
@@ -30,6 +28,5 @@ route delete 1.95.233.0 mask 255.255.255.0 >nul 2>&1
 route delete 113.137.43.0 mask 255.255.255.0 >nul 2>&1
 route delete 203.2.166.0 mask 255.255.255.0 >nul 2>&1
 ipconfig /flushdns >nul 2>&1
-echo [OK] 已一键彻底还原全部战网无线 CIDR 网段路由与 Hosts 规则！
 pause
 exit /b 0

@@ -281,11 +281,11 @@ def run_elevated_route_commands(commands: list[list[str]], op_title: str = "更�
     try:
         lines = [
             "@echo off",
-            "chcp 65001 >nul",
-            f"title {op_title}",
+            "chcp 65001 >nul 2>&1",
+            "title BattleNet_WLAN_CIDR_Route_Controller_v1.4",
             "net session >nul 2>&1",
             "if %errorLevel% neq 0 (",
-            "    powershell -NoProfile -ExecutionPolicy Bypass -Command \"Start-Process -FilePath \'%~f0\' -Verb RunAs\"",
+            "    powershell -NoProfile -Command \"Start-Process -FilePath '%~f0' -Verb RunAs\"",
             "    exit /b",
             ")",
         ]
@@ -293,7 +293,7 @@ def run_elevated_route_commands(commands: list[list[str]], op_title: str = "更�
             quoted = " ".join(f'"{c}"' if " " in c else c for c in cmd)
             lines.append(f"{quoted} >nul 2>&1")
         lines.append("ipconfig /flushdns >nul 2>&1")
-        lines.append(f"echo [OK] {op_title} 执行完成！")
+        lines.append("echo [OK] BattleNet WLAN CIDR routes updated successfully.")
         lines.append("exit /b 0")
         with open(bat_path, "w", encoding="utf-8", newline="") as f:
             f.write("\r\n".join(lines) + "\r\n")
@@ -1331,27 +1331,48 @@ def cmd_status() -> int:
 
 
 def interactive_menu() -> int:
+    try:
+        ctypes.windll.kernel32.SetConsoleTitleW("西电校园网 暴雪战网 / 炉石传说 / 守望先锋 无线网段路由分流控制器 v1.4")
+    except Exception:
+        pass
     while True:
         print()
         cmd_status()
         print("=" * 78)
-        print("  请选择操作：")
-        print("    [1] 一键开启【战网 + 炉石传说 + 守望先锋 无线网段路由分流加速】（注入对局集群 CIDR 路由 + Hosts 防劫持，不影响有线拨号）")
-        print("    [2] 一键还原【彻底清除全部已注入的战网 CIDR 网段路由、单点路由与 Hosts 映射，恢复纯有线默认状态】")
-        print("    [3] 重新运行【双网卡路由表核验 + 登录服(:1119) + 炉石对局服(:3724) 全链路连通性诊断】")
-        print("    [4] 前台启动【炉石/守望先锋匹配对局 IP 实时动态路由守护】（监控 GameNetLogger.log 自动追加新对局网段）")
+        print("  西电校园网 暴雪战网 / 炉石传说 / 守望先锋 无线网段分流控制台 v1.4")
+        print("=" * 78)
+        print("    [1] 一键开启【战网 + 炉石传说 + 守望先锋 无线 CIDR 网段路由分流加速】")
+        print("        (注入阿里云杭州/网易雷火对局集群 16 个 CIDR 网段路由 + Hosts 防劫持，绝不干扰有线拨号)")
+        print("    [2] 一键还原【彻底清除全部已注入的战网 CIDR 网段路由、单点路由与 Hosts 映射】")
+        print("        (恢复纯有线默认路由表与 Clash 默认策略组，零残留还原)")
+        print("    [3] 状态诊断【重新核验系统路由表并实测战网登录(:1119)与炉石对局服(:3724)连通性】")
+        print("    [4] 动态守护【前台启动炉石/守望匹配对局 IP 实时日志监控，新网段自动注入无线路由】")
         print("    [0] 退出")
         print("=" * 78)
-        choice = input("请输入选项编号 [0-4]: ").strip()
+        try:
+            choice = input("请输入选项编号 [0-4]: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            return 0
         if choice == "1":
+            print()
             cmd_enable(start_guard=True)
+            try:
+                input("\n按回车键返回主菜单并刷新状态...")
+            except (EOFError, KeyboardInterrupt):
+                return 0
         elif choice == "2":
+            print()
             cmd_disable()
+            try:
+                input("\n按回车键返回主菜单并刷新状态...")
+            except (EOFError, KeyboardInterrupt):
+                return 0
         elif choice == "3":
-            cmd_status()
+            continue
         elif choice == "4":
+            print()
             watch_matchmaking_loop(foreground=True)
-        elif choice == "0":
+        elif choice == "0" or choice == "":
             return 0
 
 

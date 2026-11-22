@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-title 注入战网与炉石对局集群无线网卡 CIDR 网段路由
+title BattleNet_WLAN_CIDR_Route_Controller_v1.4
 net session >nul 2>&1
 if %errorLevel% neq 0 (
     powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
@@ -63,5 +63,5 @@ route add 8.149.233.11 mask 255.255.255.255 10.175.255.254 metric 5 if 17 >nul 2
 route delete 84.53.172.96 >nul 2>&1
 route add 84.53.172.96 mask 255.255.255.255 10.175.255.254 metric 5 if 17 >nul 2>&1
 ipconfig /flushdns >nul 2>&1
-echo [OK] 注入战网与炉石对局集群无线网卡 CIDR 网段路由 执行完成！
+echo [OK] BattleNet WLAN CIDR routes injected successfully.
 exit /b 0
